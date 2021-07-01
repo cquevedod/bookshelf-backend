@@ -3,9 +3,9 @@ const Books = require('./models/bookModel');
 // const bookData = process.env.BOOKS_JSON || 'books.json'
 
  const bookData = process.env.NODE_ENV === 'production'
-   ? process.env.PROD_BOOKS_JSON
+   ? JSON.parse(process.env.PROD_BOOKS_JSON)
    : process.env.NODE_ENV === 'development'
-     ? process.env.DEV_BOOKS_JSON
+     ? JSON.parse(process.env.DEV_BOOKS_JSON)
      : 'books.json'
 
 async function getDataFromJSON() {

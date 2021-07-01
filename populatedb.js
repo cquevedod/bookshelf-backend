@@ -3,7 +3,7 @@ const Books = require('./models/bookModel');
 // const bookData = process.env.BOOKS_JSON || 'books.json'
 
  const bookData = process.env.NODE_ENV === 'production'
-   ? JSON.parse(process.env.PROD_BOOKS_JSON)
+   ? 'books.json'
    : process.env.NODE_ENV === 'development'
      ? JSON.parse(process.env.DEV_BOOKS_JSON)
      : 'books.json'

@@ -3,14 +3,17 @@ const Books = require('./models/bookModel');
 // const bookData = process.env.BOOKS_JSON || 'books.json'
 
  const bookData = process.env.NODE_ENV === 'production'
-   ? 'books.json'
+   ? process.env.PROD_BOOKS_JSON
    : process.env.NODE_ENV === 'development'
-     ? JSON.parse(process.env.DEV_BOOKS_JSON)
+     ? process.env.DEV_BOOKS_JSON
      : 'books.json'
 
 async function getDataFromJSON() {
-  const books = await JSON
-    .parse(fs.readFileSync(bookData, 'utf8'));
+  const books = process.env.NODE_ENV === 'production'
+    ? await JSON.parse(bookData, 'utf8')
+    : process.env.NODE_ENV === 'development'
+      ? await JSON.parse(bookData, 'utf8')
+      : await JSON.parse(fs.readFileSync(bookData, 'utf8'))
   return books;
 }
 

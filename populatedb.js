@@ -1,20 +1,10 @@
 const fs = require('fs');
 const Books = require('./models/bookModel');
+const { utils } = require('./utils');
 // const bookData = process.env.BOOKS_JSON || 'books.json'
 
- const bookData = process.env.NODE_ENV === 'production'
-   ? process.env.PROD_BOOKS_JSON
-   : process.env.NODE_ENV === 'development'
-     ? process.env.DEV_BOOKS_JSON
-     : 'books.json'
-
 async function getDataFromJSON() {
-  const books = process.env.NODE_ENV === 'production'
-    ? await JSON.parse(bookData, 'utf8')
-    : process.env.NODE_ENV === 'development'
-      ? await JSON.parse(bookData, 'utf8')
-      : await JSON.parse(fs.readFileSync(bookData, 'utf8'))
-  return books;
+  return await JSON.parse(fs.readFileSync('books.json', 'utf8'))
 }
 
 async function dbHasDocuments(collection) {
@@ -25,7 +15,19 @@ function populateDb() {
   getDataFromJSON()
     .then(data => {
       data.books.forEach(book => {
-        const newBook = new Books(book);
+        const newBook = new Books({
+          id: book.id,
+          title: book.volumeInfo?.title,
+          publishedDate: book.volumeInfo?.publishedDate,
+          authors: book.volumeInfo?.authors,
+          pageCount: book.volumeInfo?.pageCount,
+          description: book.volumeInfo?.description,
+          averageRating: book.volumeInfo?.averageRating,
+          ratingsCount: book.volumeInfo?.ratingsCount,
+          imageLinks: book.volumeInfo?.imageLinks,
+          bookShelf: utils.assignBookshelf(),
+          industryIdentifiers: book.volumeInfo?.industryIdentifiers
+        });
         newBook.save();
       });
       console.log('db populated with books');
@@ -41,6 +43,6 @@ function populateDb() {
   if (!dbHasBooks) populateDb()
 })()
 
-// module.exports = {
-//   populateDB
-// };
+module.exports = {
+  populateDb
+};

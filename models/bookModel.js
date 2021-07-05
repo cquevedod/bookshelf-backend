@@ -10,10 +10,15 @@ const BookSchema = Schema({
   },
   title: String,
   publishedDate: String,
-  author: String,
+  authors: [String],
   pageCount: Number,
   description: String,
-  rating: Number,
+  averageRating: Number,
+  ratingsCount: Number,
+  imageLinks: {
+    smallThumbnail: String,
+    thumbnail: String
+  },
   bookShelf: {
     type: String,
     enum: ['Cartagena', 'Medellin', 'Quito', 'Digital']
@@ -23,7 +28,7 @@ const BookSchema = Schema({
     type: Date,
     trim: true,
   },
-  isbn: String,
+  industryIdentifiers: [{}],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     required: function () { return this.isLent; },

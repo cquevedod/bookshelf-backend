@@ -5,19 +5,19 @@ const Book = require('../models/bookModel');
 const verify = require('../services/jwt');
 
 async function getBookById(req, res, next) {
-    
-    const bookId = req.params.id;
-    const query = await Book.find({ id: bookId });
 
-    if (!query.length) return res.status(404).send(msg.notFound('Book does not exist'));
+  const bookId = req.params.id;
+  const query = await Book.find({ id: bookId });
 
-    return res.send(msg.ok(query));
+  if (!query.length) return res.status(404).send(msg.notFound('Book does not exist'));
+
+  return res.send(msg.ok(query));
 
 }
 
 function getAllBooksOrByBookshelf(req, res) {
-  
-    const input = req.query.bookshelf;
+
+  const input = req.query.bookshelf;
 
   if (input) {
     const location = input[0].toUpperCase() + input.slice(1);
@@ -34,8 +34,8 @@ function getAllBooksOrByBookshelf(req, res) {
       return res.send(msg.ok(data, 'All Books!'));
     })
   }
-    
-  
+
+
 }
 
 function getLentBooksByUser(req, res) {
@@ -77,7 +77,7 @@ function lendBook(req, res) {
           }
         }
       ).exec();
-      return res.status(401).send(msg.unAuthorized(book, 'You can not lend a Digital book!'));
+      return res.status(401).send(msg.unAuthorized('You can not lend a Digital book!', book));
     } else {
       if (book[0].isLent) return res.status(401).send(msg.alreadyLentOrNot(book, 'This book is already Lent!'));
 
@@ -130,7 +130,7 @@ Date.prototype.isValid = function () {
 function validateDate(date) {
   var datePattern = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
   return datePattern.test(date);
-} 
+}
 
 module.exports = {
   getBookById,

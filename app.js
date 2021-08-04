@@ -1,6 +1,5 @@
 
 const express = require('express');
-const bodyparser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
@@ -11,8 +10,8 @@ const error = require('./middlewares/error')
 const user_routes = require('./routes/userRoute');
 const book_routes = require('./routes/bookRoute');
 
-app.use(bodyparser.urlencoded({ extended: false }));
-app.use(bodyparser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.use(cors());
 

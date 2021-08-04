@@ -1,26 +1,25 @@
 
-const jwt = require('jwt-simple');
+const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const msg = require('../controllers/statusMsg');
-const secret = 'one_second'; // secret key to hash createToken object
 
 module.exports = function (req, res, next) {
-  if (!req.headers.authorization) {
+  if (!req.headers['authorization'].split(' ')[1]) {
     return res
       .status(401)
       .send('Access denied. No token provided');
   }
-
-  const token = req.headers.authorization.replace(/['"]+/g, "");
+  //const token = req.headers['authorization'].replace(/['"]+/g, "");
+  const token = req.headers['authorization'].split(' ')[1];
   try {
-    //var used here because of scope. if use let, the payload in the line 27 will be undefined
-    var payload = jwt.decode(token, secret);
-    if (payload.exp <= moment().unix()) return res.status(401).send({ message: 'Token has expired' });
-  } catch (ex) {
-    console.log(`Error auth: ${ex}`);
-    return res.status(400).send(msg.unAuthorized('Invalid authentication Token'));
+    req.user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).send(msg.unAuthorized('Token expired'));
+    }
+
+    return res.status(403).send({ description: `${error.name}` });
   }
-  req.user = payload;
   next();
 };
 

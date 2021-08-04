@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const UserSchema = Schema({
   name: {
     type: String,
-    required: true,
     minlength: 3,
     maxlength: 50,
   },
@@ -17,11 +16,12 @@ const UserSchema = Schema({
   },
   password: {
     type: String,
+    minlength: 6,
+    maxlength: 50,
     required: true
   },
   role: {
     type: String,
-    required: true,
     enum: ['admin', 'user']
   },
   createdAt: Date

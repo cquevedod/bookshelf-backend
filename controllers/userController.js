@@ -12,17 +12,13 @@ function register(req, res) {
 
   const { name, surname, email, password, role } = req.body;
 
-  if (!password || !name || !email || !role) return res.status(422).send(msg.dataRequired('Please complete the required data'));
+  if (!password || !email) return res.status(422).send(msg.dataRequired('Please complete the required data'));
   User.find({ email })
     .then(existingUser => {
-      console.log(existingUser);
       if (existingUser.length) return res.status(401).send(msg.duplEmail('There is a user with this email!'));
 
-      let user = new User({
+      const user = new User({
         email: email.toLowerCase(),
-        name,
-        surname,
-        role: role.toLowerCase()
       });
 
       bcrypt.hash(password, 10)
@@ -51,11 +47,10 @@ function loginUser(req, res) {
 
   User.findOne({ email: email.toLowerCase() })
     .then(user => {
-      if (!user) return res.status(404).send(msg.notFound('The user does not exist'));
+      if (!user) return res.status(404).send(msg.notFound('Wrong credentials'));
 
       bcrypt.compare(password, user.password)
         .then(validPassword => {
-          console.log(validPassword)
           if (!validPassword) return res.status(404).send(msg.notFound('Wrong credentials'));
           const token = jwt.createToken(user);
           return res.status(200)
@@ -68,9 +63,9 @@ function loginUser(req, res) {
 }
 
 function getMe(req, res) {
-  User.find({ _id: req.user.id}).select('-password')
+  User.find({ _id: req.user.id }).select('-password')
     .then(user => {
-        return res.status(200).send(user);
+      return res.status(200).send(user);
     })
 }
 
@@ -83,20 +78,20 @@ function getAllUsers(req, res) {
 
 function deleteUser(req, res) {
   const userToBeDeleted = req.params.id;
- 
-    Book.find({ user: userToBeDeleted })
+
+  Book.find({ user: userToBeDeleted })
     .then(book => {
       console.log(book);
-      if(book.length > 0) return res.status(401).send({ message: 'Action denied. This user have book(s) lent'});
+      if (book.length > 0) return res.status(401).send({ message: 'Action denied. This user have book(s) lent' });
 
       User.deleteOne({ _id: userToBeDeleted }).exec()
-      .then(qty => {
-        console.log(qty);
-  
-        if (qty.n == 0) return res.status(201).send({ message: 'User does not exist' });
-        if (qty.n == 1) return res.status(201).send({ message: 'User deleted' });
+        .then(qty => {
+          console.log(qty);
 
-      })
+          if (qty.n == 0) return res.status(201).send({ message: 'User does not exist' });
+          if (qty.n == 1) return res.status(201).send({ message: 'User deleted' });
+
+        })
     })
 }
 

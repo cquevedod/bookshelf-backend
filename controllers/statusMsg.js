@@ -73,14 +73,14 @@ function badRequest() {
   return result;
 }
 
-function unAuthorized(book, msg) {
+function unAuthorized(msg, book = {}) {
   const response = {
     status: 401,
     description: 'Unauthorized',
     message: msg,
-    title: book[0].title,
-    bookshelf: book[0].bookShelf,
-    id: book[0].id
+    title: book[0]?.title,
+    bookshelf: book[0]?.bookShelf,
+    id: book[0]?.id
   };
   return response;
 }
